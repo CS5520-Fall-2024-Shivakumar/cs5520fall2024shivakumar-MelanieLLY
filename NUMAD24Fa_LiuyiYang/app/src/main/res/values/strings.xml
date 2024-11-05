@@ -13,8 +13,8 @@
 
     <string name="plus">\u002B</string>
     <string name="minus">\u2212</string>
-<!--    <string name="multiply">\u00D7</string>-->
-<!--    <string name="divide">\u00F7</string>-->
+    <!--    <string name="multiply">\u00D7</string>-->
+    <!--    <string name="divide">\u00F7</string>-->
 
     <string name="equal_sign">\u003D</string>
     <string name="delete_last_char"> DEL </string>

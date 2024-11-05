@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         toastButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "my name is Liuyi Yang and my email is yang.liuyi@northeastern.edu", Toast.LENGTH_LONG).show();
-            }
+                Intent intent = new Intent(MainActivity.this, AboutMeActivity.class);
+                startActivity(intent);            }
         });
 
         Button calculatorButton = findViewById(R.id.calculatorButton);
