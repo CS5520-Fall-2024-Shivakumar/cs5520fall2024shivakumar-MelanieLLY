@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AboutMeActivity.class);
-                startActivity(intent);            }
+                startActivity(intent);
+            }
         });
 
         Button calculatorButton = findViewById(R.id.calculatorButton);
@@ -39,10 +40,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, QuicCalc.class);
-                startActivity(intent);            }
+                startActivity(intent);
+            }
         });
 
-    }
+        Button contactsCollectorButton = findViewById(R.id.contactsCollectorButton);
+        contactsCollectorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ContactsCollectorActivity.class);
+                startActivity(intent);
+            }
+        }
 
+        );
+
+    }
 
 }
