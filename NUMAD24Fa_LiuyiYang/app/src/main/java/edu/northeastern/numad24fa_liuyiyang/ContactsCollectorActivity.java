@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.activity.EdgeToEdge;
+//import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +30,10 @@ public class ContactsCollectorActivity extends AppCompatActivity {
 //        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_contacts_collector);
         contactsList = new ArrayList<>();
+        if (savedInstanceState != null) {
+            contactsList = (List<Contact>) savedInstanceState.getSerializable("contactsList");
+        }
+
         contactsRecyclerView = findViewById(R.id.contactsRecyclerView);
         contactsAdapter = new ContactsAdapter(this, contactsList);
 
@@ -41,60 +45,56 @@ public class ContactsCollectorActivity extends AppCompatActivity {
         addContactFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater inflater = LayoutInflater.from(ContactsCollectorActivity.this);
-                View dialogView = inflater.inflate(R.layout.dialog_add_contact, null);
-
-                final EditText contactNameEditText = dialogView.findViewById(R.id.contactNameEditText);
-                final EditText contactPhoneEditText = dialogView.findViewById(R.id.contactPhoneEditText);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(ContactsCollectorActivity.this);
-                builder.setTitle("Add New Contact");
-                builder.setView(dialogView);
-
-                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String name = contactNameEditText.getText().toString();
-                        String phone = contactPhoneEditText.getText().toString();
-                        if (!name.isEmpty() && !phone.isEmpty()) {
-                            Contact newContact = new Contact(name, phone);
-                            contactsList.add(newContact);
-                            contactsAdapter.notifyDataSetChanged();
-                            Toast.makeText(ContactsCollectorActivity.this, "Contact added", Toast.LENGTH_SHORT).show();
-
-                        } else {
-                            Toast.makeText(ContactsCollectorActivity.this, "Error: All details are needed. ", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.create().show();
-
-
-
-
-
-
-
-
-
-
+                showAddContactDialog();
             }
-
         });
+    }
+
+    private void showAddContactDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_add_contact, null);
+
+        final EditText contactNameEditText = dialogView.findViewById(R.id.contactNameEditText);
+        final EditText contactPhoneEditText = dialogView.findViewById(R.id.contactPhoneEditText);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add New Contact");
+        builder.setView(dialogView);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String name = contactNameEditText.getText().toString();
+                String phone = contactPhoneEditText.getText().toString();
+                if (!name.isEmpty() && !phone.isEmpty()) {
+                    Contact newContact = new Contact(name, phone);
+                    contactsList.add(newContact);
+                    contactsAdapter.notifyDataSetChanged();
+//                    Toast.makeText(ContactsCollectorActivity.this, "Contact added", Toast.LENGTH_SHORT).show();
+
+                    Snackbar.make(contactsRecyclerView, "Contact added", Snackbar.LENGTH_LONG)
+                            .setAction("Undo", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    contactsList.remove(newContact);
+                                    contactsAdapter.notifyDataSetChanged();
+                                    Snackbar.make(contactsRecyclerView, "Contact creation undone", Snackbar.LENGTH_SHORT).show();
+                                }
+                            }).show();
+                } else {
+                    Toast.makeText(ContactsCollectorActivity.this, "Error: All details are needed.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
         public void showEditContactDialog(Contact contact, int position) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_contact, null);
 
             if (dialogView == null) {
-                Log.e("ContactsCollectorActivity", "布局加载失败，退出");
+                Log.e("ContactsCollectorActivity", "layout problem");
                 return;
             }
 
@@ -104,7 +104,7 @@ public class ContactsCollectorActivity extends AppCompatActivity {
             EditText editPhone = dialogView.findViewById(R.id.contactPhoneEditText);
 
             if (editName == null || editPhone == null) {
-                Log.e("ContactsCollectorActivity", "检查 EditText 是否为 null");
+                Log.e("ContactsCollectorActivity", "EditText is null");
                 return;
             }
             // 预填充现有数据
@@ -148,6 +148,11 @@ public class ContactsCollectorActivity extends AppCompatActivity {
                     }).show();
         }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("contactsList", new ArrayList<>(contactsList));
+    }
 //        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
 //            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
