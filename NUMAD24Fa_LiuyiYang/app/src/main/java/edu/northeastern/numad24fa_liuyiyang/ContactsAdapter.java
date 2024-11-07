@@ -2,6 +2,8 @@ package edu.northeastern.numad24fa_liuyiyang;
 
 
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,15 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         Contact contact = contacts.get(position);
         holder.nameTextView.setText(contact.getName());
         holder.phoneTextView.setText(contact.getPhoneNumber());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + contact.getPhoneNumber()));
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
